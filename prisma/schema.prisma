@@ -1,0 +1,123 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Family {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users        User[]
+  categories   Category[]
+  transactions Transaction[]
+  budgets      Budget[]
+}
+
+model User {
+  id             String   @id @default(uuid())
+  name           String
+  email          String   @unique
+  password       String
+  role           String   @default("MEMBER") // ADMIN or MEMBER
+  points         Int      @default(0)
+  streak         Int      @default(0)
+  lastLoginDate  String?
+  telegramToken  String?
+  familyId       String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  family       Family        @relation(fields: [familyId], references: [id])
+  transactions Transaction[]
+  achievements Achievement[]
+  chatMessages ChatMessage[]
+  notifications Notification[]
+}
+
+model Category {
+  id       String  @id @default(uuid())
+  name     String
+  icon     String  @default("📦")
+  color    String  @default("#6366f1")
+  rules    String  @default("[]") // JSON array of keyword rules for auto-categorization
+  familyId String
+
+  family       Family        @relation(fields: [familyId], references: [id])
+  transactions Transaction[]
+  budgets      Budget[]
+
+  @@unique([name, familyId])
+}
+
+model Transaction {
+  id                String   @id @default(uuid())
+  amount            Float
+  description       String
+  date              DateTime
+  type              String   // INCOME or EXPENSE
+  status            String   @default("CONFIRMED") // CONFIRMED or PENDING
+  source            String   @default("MANUAL") // MANUAL, EMAIL, TELEGRAM, CHAT
+  recurring         Boolean  @default(false)
+  recurringInterval String?  // DAILY, WEEKLY, MONTHLY, YEARLY
+  categoryId        String?
+  userId            String
+  familyId          String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  category Category? @relation(fields: [categoryId], references: [id])
+  user     User      @relation(fields: [userId], references: [id])
+  family   Family    @relation(fields: [familyId], references: [id])
+}
+
+model Budget {
+  id         String @id @default(uuid())
+  month      String // "2026-02" format
+  limit      Float
+  categoryId String
+  familyId   String
+
+  category Category @relation(fields: [categoryId], references: [id])
+  family   Family   @relation(fields: [familyId], references: [id])
+
+  @@unique([month, categoryId, familyId])
+}
+
+model Achievement {
+  id       String   @id @default(uuid())
+  type     String   // ECONOMIST, CONSISTENT, MASTER, RECORDER, SAVER
+  name     String
+  icon     String
+  earnedAt DateTime @default(now())
+  userId   String
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model ChatMessage {
+  id        String   @id @default(uuid())
+  content   String
+  response  String
+  userId    String
+  familyId  String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  title     String
+  body      String
+  read      Boolean  @default(false)
+  data      String   @default("{}") // JSON
+  userId    String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}

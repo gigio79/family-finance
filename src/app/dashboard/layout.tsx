@@ -67,7 +67,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                     </div>
                 </div>
 
-                <nav className="sidebar-nav">
+                <nav className="sidebar-nav" style={{ flex: 1 }}>
                     {NAV_ITEMS.map(item => (
                         <a
                             key={item.href}
@@ -85,7 +85,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                     ))}
                 </nav>
 
-                <div style={{ padding: '1rem 0.75rem', marginTop: 'auto', borderTop: '1px solid var(--border)', position: 'absolute', bottom: 0, left: 0, right: 0, background: 'var(--bg-secondary)' }}>
+                <div style={{ padding: '1rem 0.75rem', borderTop: '1px solid var(--border)', background: 'var(--bg-secondary)' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.5rem 1rem', marginBottom: '0.5rem' }}>
                         <div className="avatar">{user.name?.[0]?.toUpperCase()}</div>
                         <div>

@@ -1,3 +1,4 @@
+export const runtime = "nodejs";
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { hashPassword, signToken } from '@/lib/auth';
@@ -33,15 +34,18 @@ export async function POST(req: NextRequest) {
                 categories: {
                     createMany: {
                         data: [
-                            { name: 'Alimentação', icon: '🍔', color: '#ef4444', rules: JSON.stringify(['restaurante', 'ifood', 'mercado', 'supermercado', 'padaria']) },
-                            { name: 'Transporte', icon: '🚗', color: '#f59e0b', rules: JSON.stringify(['uber', '99', 'posto', 'combustível', 'estacionamento']) },
-                            { name: 'Moradia', icon: '🏠', color: '#3b82f6', rules: JSON.stringify(['aluguel', 'condomínio', 'luz', 'água', 'gás', 'internet']) },
-                            { name: 'Saúde', icon: '💊', color: '#10b981', rules: JSON.stringify(['farmácia', 'médico', 'hospital', 'clínica']) },
-                            { name: 'Educação', icon: '📚', color: '#8b5cf6', rules: JSON.stringify(['escola', 'curso', 'livro', 'universidade']) },
-                            { name: 'Lazer', icon: '🎮', color: '#ec4899', rules: JSON.stringify(['cinema', 'netflix', 'spotify', 'teatro', 'bar']) },
-                            { name: 'Vestuário', icon: '👕', color: '#14b8a6', rules: JSON.stringify(['roupa', 'calçado', 'loja', 'shopping']) },
-                            { name: 'Salário', icon: '💰', color: '#22c55e', rules: JSON.stringify(['salário', 'pagamento', 'freelance']) },
-                            { name: 'Outros', icon: '📦', color: '#6366f1', rules: JSON.stringify([]) },
+                            { name: 'Alimentação', type: 'EXPENSE', icon: '🍔', color: '#ef4444', rules: JSON.stringify(['restaurante', 'ifood', 'mercado', 'supermercado', 'padaria']) },
+                            { name: 'Transporte', type: 'EXPENSE', icon: '🚗', color: '#f59e0b', rules: JSON.stringify(['uber', '99', 'posto', 'combustível', 'estacionamento']) },
+                            { name: 'Moradia', type: 'EXPENSE', icon: '🏠', color: '#3b82f6', rules: JSON.stringify(['aluguel', 'condomínio', 'luz', 'água', 'gás', 'internet']) },
+                            { name: 'Saúde', type: 'EXPENSE', icon: '💊', color: '#10b981', rules: JSON.stringify(['farmácia', 'médico', 'hospital', 'clínica']) },
+                            { name: 'Educação', type: 'EXPENSE', icon: '📚', color: '#8b5cf6', rules: JSON.stringify(['escola', 'curso', 'livro', 'universidade']) },
+                            { name: 'Lazer', type: 'EXPENSE', icon: '🎮', color: '#ec4899', rules: JSON.stringify(['cinema', 'netflix', 'spotify', 'teatro', 'bar']) },
+                            { name: 'Vestuário', type: 'EXPENSE', icon: '👕', color: '#14b8a6', rules: JSON.stringify(['roupa', 'calçado', 'loja', 'shopping']) },
+                            { name: 'Outros', type: 'EXPENSE', icon: '📦', color: '#6366f1', rules: JSON.stringify([]) },
+                            { name: 'Salário', type: 'INCOME', icon: '💰', color: '#22c55e', rules: JSON.stringify(['salário', 'pagamento']) },
+                            { name: 'Freelance', type: 'INCOME', icon: '💼', color: '#10b981', rules: JSON.stringify(['freelance', 'projeto']) },
+                            { name: 'Investimentos', type: 'INCOME', icon: '📈', color: '#3b82f6', rules: JSON.stringify(['rendimento', 'juros', 'dividendos']) },
+                            { name: 'Outros Income', type: 'INCOME', icon: '💵', color: '#6366f1', rules: JSON.stringify([]) },
                         ],
                     },
                 },

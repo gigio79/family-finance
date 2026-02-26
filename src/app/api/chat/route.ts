@@ -1,3 +1,4 @@
+export const runtime = "nodejs";
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getSession } from '@/lib/auth';
@@ -25,14 +26,14 @@ export async function POST(req: NextRequest) {
         const session = await getSession();
         if (!session) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
 
-        const { content } = await req.json();
-        if (!content) return NextResponse.json({ error: 'Mensagem obrigatória' }, { status: 400 });
+        const { content, file } = await req.json();
 
-        const response = await processChat(content, session.familyId);
+        // file: { base64: string, type: string }
+        const response = await processChat(content || '', session.familyId, session.userId, file);
 
         const chatMessage = await prisma.chatMessage.create({
             data: {
-                content,
+                content: content || (file ? '[Anexo enviado]' : ''),
                 response,
                 userId: session.userId,
                 familyId: session.familyId,

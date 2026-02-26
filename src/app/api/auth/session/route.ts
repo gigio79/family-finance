@@ -1,3 +1,4 @@
+export const runtime = "nodejs";
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
 
@@ -13,7 +14,16 @@ export async function GET() {
         if (!session) {
             return NextResponse.json({ authenticated: false }, { status: 401 });
         }
-        return NextResponse.json({ authenticated: true, user: session });
+        return NextResponse.json({ 
+            authenticated: true, 
+            user: {
+                id: session.userId,
+                name: session.name,
+                email: session.email,
+                role: session.role,
+                familyId: session.familyId
+            }
+        });
     } catch {
         return NextResponse.json({ authenticated: false }, { status: 401 });
     }

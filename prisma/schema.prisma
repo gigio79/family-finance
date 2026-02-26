@@ -3,7 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Family {
@@ -16,63 +17,117 @@ model Family {
   categories   Category[]
   transactions Transaction[]
   budgets      Budget[]
+  aiUsageLogs  AiUsageLog[]
+  accounts     Account[]
 }
 
 model User {
-  id             String   @id @default(uuid())
-  name           String
-  email          String   @unique
-  password       String
-  role           String   @default("MEMBER") // ADMIN or MEMBER
-  points         Int      @default(0)
-  streak         Int      @default(0)
-  lastLoginDate  String?
-  telegramToken  String?
-  familyId       String
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id            String   @id @default(uuid())
+  name          String
+  email         String   @unique
+  password      String
+  role          String   @default("MEMBER") // ADMIN or MEMBER
+  points        Int      @default(0)
+  streak        Int      @default(0)
+  lastLoginDate String?
+  telegramToken String?
+  familyId      String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  family       Family        @relation(fields: [familyId], references: [id])
-  transactions Transaction[]
-  achievements Achievement[]
-  chatMessages ChatMessage[]
+  family        Family         @relation(fields: [familyId], references: [id])
+  transactions  Transaction[]
+  achievements  Achievement[]
+  chatMessages  ChatMessage[]
   notifications Notification[]
+  aiUsageLogs   AiUsageLog[]
+
+  @@index([familyId])
 }
 
 model Category {
-  id       String  @id @default(uuid())
-  name     String
-  icon     String  @default("📦")
-  color    String  @default("#6366f1")
-  rules    String  @default("[]") // JSON array of keyword rules for auto-categorization
-  familyId String
+  id        String   @id @default(uuid())
+  name      String
+  type      String // INCOME or EXPENSE
+  icon      String   @default("📦")
+  color     String   @default("#6366f1")
+  rules     String   @default("[]")
+  familyId  String
+  createdAt DateTime @default(now())
 
   family       Family        @relation(fields: [familyId], references: [id])
   transactions Transaction[]
   budgets      Budget[]
 
+  @@unique([name, familyId, type])
+  @@index([familyId])
+  @@index([type])
+}
+
+model Account {
+  id          String    @id @default(uuid())
+  name        String
+  type        String    // CASH, BANK, CREDIT_CARD
+  balance     Float     @default(0)
+  limit       Float?
+  closingDay  Int?
+  dueDay      Int?
+  color       String    @default("#6366f1")
+  icon        String    @default("💳")
+  familyId    String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  family       Family        @relation(fields: [familyId], references: [id])
+  transactions Transaction[]
+
   @@unique([name, familyId])
+  @@index([familyId])
 }
 
 model Transaction {
-  id                String   @id @default(uuid())
-  amount            Float
-  description       String
-  date              DateTime
-  type              String   // INCOME or EXPENSE
-  status            String   @default("CONFIRMED") // CONFIRMED or PENDING
-  source            String   @default("MANUAL") // MANUAL, EMAIL, TELEGRAM, CHAT
-  recurring         Boolean  @default(false)
-  recurringInterval String?  // DAILY, WEEKLY, MONTHLY, YEARLY
-  categoryId        String?
-  userId            String
-  familyId          String
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  id                  String   @id @default(uuid())
+  amount              Float
+  description         String
+  date                DateTime
+  type                String   // INCOME or EXPENSE
+  status              String   @default("CONFIRMED")
+  source              String   @default("MANUAL")
+  recurring           Boolean  @default(false)
+  recurringInterval   String?
 
-  category Category? @relation(fields: [categoryId], references: [id])
-  user     User      @relation(fields: [userId], references: [id])
-  family   Family    @relation(fields: [familyId], references: [id])
+  // Installment fields
+  isInstallment       Boolean  @default(false)
+  installmentGroupId  String?
+  installmentNumber   Int?
+  totalInstallments   Int?
+  parentTransactionId String?
+
+  // Credit card billing
+  billingMonth       DateTime?
+
+  categoryId  String?
+  accountId   String?
+  userId      String
+  familyId    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  category          Category?      @relation(fields: [categoryId], references: [id])
+  account           Account?       @relation(fields: [accountId], references: [id])
+  user              User           @relation(fields: [userId], references: [id])
+  family            Family         @relation(fields: [familyId], references: [id])
+  parentTransaction Transaction?  @relation("InstallmentGroup", fields: [parentTransactionId], references: [id])
+  childInstallments Transaction[]  @relation("InstallmentGroup")
+
+  @@index([familyId])
+  @@index([userId])
+  @@index([categoryId])
+  @@index([accountId])
+  @@index([billingMonth])
+  @@index([createdAt])
+  @@index([installmentGroupId])
+  @@index([parentTransactionId])
 }
 
 model Budget {
@@ -86,17 +141,22 @@ model Budget {
   family   Family   @relation(fields: [familyId], references: [id])
 
   @@unique([month, categoryId, familyId])
+  @@index([familyId])
 }
 
 model Achievement {
   id       String   @id @default(uuid())
-  type     String   // ECONOMIST, CONSISTENT, MASTER, RECORDER, SAVER
+  type     String // ECONOMIST, CONSISTENT, MASTER, RECORDER, SAVER
   name     String
   icon     String
   earnedAt DateTime @default(now())
   userId   String
+  familyId String
 
   user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([familyId])
 }
 
 model ChatMessage {
@@ -108,6 +168,9 @@ model ChatMessage {
   createdAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id])
+
+  @@index([familyId])
+  @@index([userId])
 }
 
 model Notification {
@@ -117,7 +180,29 @@ model Notification {
   read      Boolean  @default(false)
   data      String   @default("{}") // JSON
   userId    String
+  familyId  String
   createdAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([familyId])
+}
+
+model AiUsageLog {
+  id            String   @id @default(uuid())
+  familyId      String
+  userId        String
+  actionType    String
+  tokensInput   Int
+  tokensOutput  Int
+  estimatedCost Float
+  createdAt     DateTime @default(now())
+
+  family Family @relation(fields: [familyId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@index([familyId])
+  @@index([userId])
+  @@index([createdAt])
 }

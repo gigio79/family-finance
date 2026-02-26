@@ -9,6 +9,8 @@ interface DashboardLayoutProps {
 const NAV_ITEMS = [
     { href: '/dashboard', icon: '📊', label: 'Dashboard' },
     { href: '/dashboard/transactions', icon: '💳', label: 'Transações' },
+    { href: '/dashboard/accounts', icon: '🏦', label: 'Contas' },
+    { href: '/dashboard/credit-cards', icon: '💳', label: 'Cartões' },
     { href: '/dashboard/categories', icon: '🏷️', label: 'Categorias' },
     { href: '/dashboard/cfo', icon: '🤖', label: 'CFO IA' },
     { href: '/dashboard/chat', icon: '💬', label: 'Chat' },

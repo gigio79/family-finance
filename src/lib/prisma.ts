@@ -9,11 +9,15 @@ const globalForPrisma = globalThis as unknown as {
 
 function createPrismaClient() {
   if (!process.env.DATABASE_URL) {
-    throw new Error('DATABASE_URL não está definida no arquivo .env');
+    throw new Error('DATABASE_URL não está definida');
   }
   
+  const connectionString = process.env.DATABASE_URL.includes('sslmode') 
+    ? process.env.DATABASE_URL 
+    : `${process.env.DATABASE_URL}?sslmode=require`;
+  
   const pool = new Pool({ 
-    connectionString: process.env.DATABASE_URL,
+    connectionString,
     ssl: { 
       rejectUnauthorized: false 
     }

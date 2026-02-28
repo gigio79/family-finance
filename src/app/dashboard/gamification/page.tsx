@@ -53,6 +53,12 @@ export default function GamificationPage() {
                 <h1>🏆 Gamificação</h1>
             </div>
 
+            <div className="card" style={{ marginBottom: '1.5rem', background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
+                <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                    🏆 <strong>Acompanhe sua evolução financeira</strong> através de metas, desafios e conquistas. Complete objetivos para melhorar o controle e disciplina da família.
+                </p>
+            </div>
+
             {/* User stats */}
             <div className="stats-grid">
                 <div className="stat-card balance">

@@ -113,6 +113,12 @@ export default function AccountsPage() {
                 </button>
             </div>
 
+            <div className="card" style={{ marginBottom: '1.5rem', background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
+                <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                    💰 <strong>Contas representam onde seu dinheiro está armazenado:</strong> banco, carteira ou cartão de crédito. gerencie todas as suas contas em um só lugar.
+                </p>
+            </div>
+
             {/* Summary Cards */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
                 <div className="card" style={{ padding: '1.25rem' }}>

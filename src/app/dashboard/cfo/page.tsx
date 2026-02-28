@@ -39,13 +39,19 @@ export default function CFOPage() {
                 <h1>🤖 CFO da Família</h1>
             </div>
 
-            <div className="card" style={{ marginBottom: '2rem', background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.05))' }}>
+            <div className="card" style={{ marginBottom: '1.5rem', background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
+                <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                    🤖 <strong>O CFO IA analisa automaticamente suas finanças</strong> e fornece recomendações inteligentes para melhorar sua organização financeira. Tire dúvidas e receba dicas personalizadas.
+                </p>
+            </div>
+
+            <div className="card" style={{ marginBottom: '2rem', background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.05))', border: '1px solid var(--primary-light)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                     <div style={{ fontSize: '3rem' }}>🧠</div>
                     <div>
-                        <h3>Inteligência Financeira</h3>
+                        <h3>Inteligência Financeira Ativa</h3>
                         <p className="text-sm text-muted">
-                            O CFO analisa seus dados e gera insights automáticos. No futuro, este módulo será potencializado por IA avançada.
+                            Seu CFO agora utiliza Inteligência Artificial avançada para analisar seus padrões e oferecer conselhos estratégicos personalizados.
                         </p>
                     </div>
                 </div>

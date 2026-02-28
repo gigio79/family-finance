@@ -275,6 +275,12 @@ export default function TransactionsPage() {
         <h1>💳 Transações</h1>
       </div>
 
+      <div className="card" style={{ marginBottom: '1.5rem', background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
+        <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+          📝 <strong>Registre aqui todas as entradas e saídas de dinheiro da sua família.</strong> Cada transação impacta o saldo das contas e ajuda no controle financeiro.
+        </p>
+      </div>
+
       <div className="filters-bar">
         <div
           className={`filter-chip ${filterType === "" ? "active" : ""}`}
@@ -616,6 +622,7 @@ export default function TransactionsPage() {
 
               <div className="form-group">
                 <label className="form-label">Valor Total (R$)</label>
+                <p className="text-xs text-muted" style={{ margin: '0 0 0.5rem 0' }}>Informe o valor total da transação.</p>
                 <input
                   className="form-input"
                   type="number"
@@ -631,6 +638,7 @@ export default function TransactionsPage() {
 
               <div className="form-group">
                 <label className="form-label">Descrição</label>
+                <p className="text-xs text-muted" style={{ margin: '0 0 0.5rem 0' }}>O que foi comprado ou recebido.</p>
                 <input
                   className="form-input"
                   type="text"

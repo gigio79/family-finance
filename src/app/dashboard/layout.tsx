@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect, ReactNode } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
+import InstallAppButton from '@/components/InstallAppButton';
 
 interface DashboardLayoutProps {
     children: ReactNode;
@@ -109,6 +110,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
             <main className="main-content">
                 {children}
+                <InstallAppButton />
             </main>
         </div>
     );

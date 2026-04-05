@@ -25,7 +25,7 @@ export default function CFOPage() {
     if (loading) {
         return (
             <div>
-                <div className="page-header"><h1>🤖 CFO da Família</h1></div>
+                <div className="page-header"><h1>CFO da Família</h1></div>
                 <div className="insights-grid">
                     {[1, 2, 3].map(i => <div key={i} className="skeleton" style={{ height: 120, borderRadius: 'var(--radius-lg)' }} />)}
                 </div>
@@ -36,12 +36,12 @@ export default function CFOPage() {
     return (
         <div className="animate-fade">
             <div className="page-header">
-                <h1>🤖 CFO da Família</h1>
+                <h1>CFO da Família</h1>
             </div>
 
             <div className="card" style={{ marginBottom: '1.5rem', background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
                 <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                    🤖 <strong>O CFO IA analisa automaticamente suas finanças</strong> e fornece recomendações inteligentes para melhorar sua organização financeira. Tire dúvidas e receba dicas personalizadas.
+                    <strong>O CFO IA analisa automaticamente suas finanças</strong> e fornece recomendações inteligentes para melhorar sua organização financeira. Tire dúvidas e receba dicas personalizadas.
                 </p>
             </div>
 

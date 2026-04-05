@@ -89,19 +89,19 @@ export default function InstallAppButton() {
         }
         .install-button {
           position: fixed;
-          bottom: 1.5rem;
-          right: 1.5rem;
-          z-index: 9999;
+          top: 5rem;
+          right: 1rem;
+          z-index: 50;
           animation: fadeInUp 0.5s ease-out;
         }
         .install-button-inner {
           display: flex;
           align-items: center;
-          gap: 0.75rem;
-          padding: 0.875rem 1.5rem;
+          gap: 0.5rem;
+          padding: 0.625rem 1rem;
           background: linear-gradient(135deg, rgba(99, 102, 241, 0.9), rgba(139, 92, 246, 0.9));
           border: 1px solid rgba(139, 92, 246, 0.3);
-          border-radius: 1rem;
+          border-radius: 0.75rem;
           cursor: pointer;
           transition: all 0.3s ease;
           box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
@@ -111,7 +111,7 @@ export default function InstallAppButton() {
           box-shadow: 0 6px 25px rgba(99, 102, 241, 0.4);
         }
         .install-icon {
-          font-size: 1.25rem;
+          font-size: 1.1rem;
           animation: iconPulse 2s ease-in-out infinite;
         }
         .install-text {
@@ -121,23 +121,24 @@ export default function InstallAppButton() {
         .install-title {
           color: white;
           font-weight: 600;
-          font-size: 0.9rem;
+          font-size: 0.8rem;
           margin: 0;
         }
         .install-subtitle {
           color: rgba(255, 255, 255, 0.7);
-          font-size: 0.7rem;
+          font-size: 0.65rem;
           margin: 0;
         }
-        @media (max-width: 480px) {
+        @media (min-width: 769px) {
           .install-button {
-            bottom: 1rem;
-            right: 1rem;
-            left: 1rem;
+            top: 0.75rem;
+            right: 0.75rem;
           }
           .install-button-inner {
-            width: 100%;
-            justify-content: center;
+            padding: 0.5rem 0.875rem;
+          }
+          .install-subtitle {
+            display: none;
           }
         }
       `}</style>

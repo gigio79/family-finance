@@ -76,6 +76,7 @@ export async function checkAndAwardMedals(userId: string, familyId: string): Pro
                     name: MEDALS.RECORDER.name,
                     icon: MEDALS.RECORDER.icon,
                     userId,
+                    familyId,
                 },
             });
             awarded.push('RECORDER');
@@ -90,6 +91,7 @@ export async function checkAndAwardMedals(userId: string, familyId: string): Pro
                 name: MEDALS.CONSISTENT.name,
                 icon: MEDALS.CONSISTENT.icon,
                 userId,
+                familyId,
             },
         });
         awarded.push('CONSISTENT');

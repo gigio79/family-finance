@@ -272,12 +272,15 @@ export default function TransactionsPage() {
   return (
     <div className="animate-fade">
       <div className="page-header">
-        <h1>💳 Transações</h1>
+        <h1>Transações</h1>
+        <button className="btn btn-primary" onClick={() => setShowTypeMenu(true)}>
+          + Nova
+        </button>
       </div>
 
       <div className="card" style={{ marginBottom: '1.5rem', background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
         <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-          📝 <strong>Registre aqui todas as entradas e saídas de dinheiro da sua família.</strong> Cada transação impacta o saldo das contas e ajuda no controle financeiro.
+          <strong>Registre aqui todas as entradas e saídas de dinheiro da sua família.</strong> Cada transação impacta o saldo das contas e ajuda no controle financeiro.
         </p>
       </div>
 
@@ -470,7 +473,7 @@ export default function TransactionsPage() {
         >
           <div className="modal" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>➕ Adicionar</h2>
+              <h2>Adicionar</h2>
               <button
                 className="modal-close"
                 onClick={() => setShowTypeMenu(false)}
@@ -586,10 +589,10 @@ export default function TransactionsPage() {
             <div className="modal-header">
               <h2>
                 {editingTx
-                  ? "✏️ Editar Transação"
+                  ? "Editar Transação"
                   : form.type === "INCOME"
-                  ? "➕ Nova Receita"
-                  : "➕ Nova Despesa"}
+                  ? "Nova Receita"
+                  : "Nova Despesa"}
               </h2>
               <button
                 className="modal-close"

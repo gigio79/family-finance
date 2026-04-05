@@ -1,5 +1,11 @@
 import { prisma } from './prisma';
 import { startOfMonth, endOfMonth, format } from 'date-fns';
+import OpenAI from 'openai';
+import { registerTransaction } from './transaction-service';
+
+const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+});
 
 interface ChatResponse {
     message: string;
@@ -118,27 +124,130 @@ const patterns: { regex: RegExp; handler: (match: RegExpMatchArray, familyId: st
     },
 ];
 
-export async function processChat(content: string, familyId: string): Promise<string> {
+export async function processChat(content: string, familyId: string, userId: string, fileData?: { base64: string; type: string }): Promise<string> {
     const normalized = content.trim().toLowerCase().replace(/[?!.]/g, '');
 
-    for (const pattern of patterns) {
-        const match = normalized.match(pattern.regex);
-        if (match) {
-            const result = await pattern.handler(match, familyId);
-            return result.message;
+    // 1. Regex patterns (only if no file)
+    if (!fileData) {
+        for (const pattern of patterns) {
+            const match = normalized.match(pattern.regex);
+            if (match) {
+                const result = await pattern.handler(match, familyId);
+                return result.message;
+            }
         }
     }
 
-    // Default responses
-    const greetings = ['oi', 'olá', 'ola', 'bom dia', 'boa tarde', 'boa noite', 'hey', 'hi'];
-    if (greetings.some(g => normalized.startsWith(g))) {
-        return '👋 Olá! Sou o assistente financeiro da sua família. Pergunte-me sobre gastos, saldo, resumo do mês, ou qual a maior despesa!';
+    // 2. OpenAI with Tools and Vision
+    if (process.env.OPENAI_API_KEY) {
+        try {
+            const { logAiUsage, checkMonthlyLimit } = await import('./ai-usage');
+
+            const { allowed, used } = await checkMonthlyLimit(familyId);
+            if (!allowed) {
+                return `⚠️ **Limite de IA atingido!** A sua família já utilizou o limite mensal de processamento de inteligência artificial (${used} tokens). Otimize o uso ou aguarde o próximo mês.`;
+            }
+
+            const now = new Date();
+            const transactions = await prisma.transaction.findMany({
+                where: { familyId, date: { gte: startOfMonth(now), lte: endOfMonth(now) }, status: 'CONFIRMED' },
+                include: { category: true },
+                take: 10,
+                orderBy: { date: 'desc' },
+            });
+
+            const income = transactions.filter(t => t.type === 'INCOME').reduce((s, t) => s + t.amount, 0);
+            const expenses = transactions.filter(t => t.type === 'EXPENSE').reduce((s, t) => s + t.amount, 0);
+
+            const systemPrompt = `
+            Você é o Assistente Financeiro da Família.
+            Contexto: Hoje é ${format(now, 'dd/MM/yyyy')}. 
+            Saldo atual: R$ ${(income - expenses).toFixed(2)}.
+            
+            Se o usuário descrever um gasto ou enviar uma foto de nota fiscal, use a ferramenta 'register_transaction'.
+            Tente categorizar corretamente (Alimentação, Transporte, Saúde, etc.). Se não existir, crie.
+            Responda em português.
+            `;
+
+            const messages: any[] = [{ role: 'system', content: systemPrompt }];
+
+            if (fileData) {
+                messages.push({
+                    role: 'user',
+                    content: [
+                        { type: 'text', text: content || 'O que você vê nesta nota fiscal?' },
+                        { type: 'image_url', image_url: { url: `data:${fileData.type};base64,${fileData.base64}` } }
+                    ]
+                });
+            } else {
+                messages.push({ role: 'user', content });
+            }
+
+            const tools: OpenAI.Chat.ChatCompletionTool[] = [
+                {
+                    type: 'function',
+                    function: {
+                        name: 'register_transaction',
+                        description: 'Registra uma nova transação (receita ou despesa) no banco de dados.',
+                        parameters: {
+                            type: 'object',
+                            properties: {
+                                description: { type: 'string', description: 'Descrição breve' },
+                                amount: { type: 'number', description: 'Valor numérico' },
+                                category: { type: 'string', description: 'Nome da categoria' },
+                                date: { type: 'string', description: 'Data YYYY-MM-DD' },
+                                type: { type: 'string', enum: ['INCOME', 'EXPENSE'] }
+                            },
+                            required: ['description', 'amount', 'category', 'type']
+                        }
+                    }
+                }
+            ];
+
+            const completion = await openai.chat.completions.create({
+                model: fileData ? 'gpt-4o-mini' : 'gpt-3.5-turbo',
+                messages,
+                tools,
+                tool_choice: 'auto',
+            });
+
+            const message = completion.choices[0].message;
+
+            // Log AI usage
+            await logAiUsage({
+                familyId,
+                userId,
+                actionType: fileData ? 'VISION_CHAT' : 'TEXT_CHAT',
+                tokensInput: completion.usage?.prompt_tokens || 0,
+                tokensOutput: completion.usage?.completion_tokens || 0
+            });
+
+            if (message.tool_calls) {
+                for (const toolCall of message.tool_calls) {
+                    if (toolCall.type === 'function') {
+                        const fn = toolCall.function;
+                        if (fn.name === 'register_transaction') {
+                            const args = JSON.parse(fn.arguments);
+
+                            const registration = await registerTransaction({
+                                ...args,
+                                familyId,
+                                userId,
+                                source: fileData ? 'VISION' : 'CHAT'
+                            });
+
+                            return registration.message;
+                        }
+                    }
+                }
+            }
+
+            return message.content || 'Entendido! Como posso ajudar mais?';
+        } catch (error) {
+            console.error('AI Error:', error);
+            return 'Desculpe, tive um problema ao processar seu pedido com IA.';
+        }
     }
 
-    const helpKeywords = ['ajuda', 'help', 'o que voc[eê] faz', 'comandos'];
-    if (helpKeywords.some(k => normalized.includes(k))) {
-        return `🤖 **O que posso fazer:**\n\n• "Quanto gastamos com [categoria] este mês?"\n• "Qual a maior despesa?"\n• "Saldo atual"\n• "Quantas transações este mês?"\n• "Resumo do mês"\n\nEm breve terei IA avançada para respostas mais inteligentes! 🚀`;
-    }
-
-    return `🤔 Desculpe, não entendi sua pergunta. Tente perguntar:\n\n• "Quanto gastamos com alimentação?"\n• "Qual a maior despesa?"\n• "Saldo geral"\n• "Resumo mensal"`;
+    return 'Não entendi sua pergunta. Tente algo como "Quanto gastei este mês?" ou "Gastei 50 reais com pizza".';
 }

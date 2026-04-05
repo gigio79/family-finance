@@ -27,6 +27,7 @@ export async function GET(req: NextRequest) {
         const startDate = searchParams.get('startDate');
         const endDate = searchParams.get('endDate');
         const status = searchParams.get('status');
+        const source = searchParams.get('source');
         const installmentGroupId = searchParams.get('installmentGroupId');
 
         if (installmentGroupId) {
@@ -42,6 +43,7 @@ export async function GET(req: NextRequest) {
         if (type) where.type = type;
         if (categoryId) where.categoryId = categoryId;
         if (status) where.status = status;
+        if (source) where.source = source;
         if (startDate || endDate) {
             where.date = {};
             if (startDate) (where.date as Record<string, unknown>).gte = new Date(startDate);

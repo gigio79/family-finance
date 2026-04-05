@@ -13,8 +13,17 @@ export default function ChatPage() {
     const [input, setInput] = useState('');
     const [file, setFile] = useState<{ base64: string, type: string, name: string } | null>(null);
     const [loading, setLoading] = useState(false);
+    const [aiStatus, setAiStatus] = useState<'online' | 'offline'>('offline');
     const messagesEnd = useRef<HTMLDivElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        fetch('/api/ai/status').then(r => r.json()).then(data => {
+            setAiStatus(data.status || 'offline');
+        }).catch(() => setAiStatus('offline'));
+        inputRef.current?.focus();
+    }, []);
 
     useEffect(() => {
         // Load history
@@ -67,8 +76,10 @@ export default function ChatPage() {
             });
             const data = await res.json();
             setMessages(prev => [...prev, { role: 'bot', text: data.response || 'Desculpe, ocorreu um erro.' }]);
+            setTimeout(() => inputRef.current?.focus(), 100);
         } catch {
             setMessages(prev => [...prev, { role: 'bot', text: '❌ Erro ao processar. Tente novamente.' }]);
+            setTimeout(() => inputRef.current?.focus(), 100);
         }
         setLoading(false);
     };
@@ -83,12 +94,12 @@ export default function ChatPage() {
     return (
         <div className="animate-fade">
             <div className="page-header">
-                <h1>💬 Chat Financeiro</h1>
+                <h1>Chat Financeiro</h1>
             </div>
 
             <div className="card" style={{ marginBottom: '1.5rem', background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
                 <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                    💬 <strong>Converse com a IA</strong> para entender melhor seus hábitos financeiros e tomar decisões mais estratégicas. Envie fotos de notas fiscais para registrar automaticamente.
+                    <strong>Converse com a IA</strong> para entender melhor seus hábitos financeiros e tomar decisões mais estratégicas. Envie fotos de notas fiscais para registrar automaticamente.
                 </p>
             </div>
 
@@ -136,6 +147,22 @@ export default function ChatPage() {
                     </div>
                 )}
 
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.5rem', borderTop: '1px solid var(--border)', background: 'var(--bg-secondary)' }}>
+                    <span style={{ 
+                        width: 8, 
+                        height: 8, 
+                        borderRadius: '50%', 
+                        background: aiStatus === 'online' ? '#10b981' : '#ef4444'
+                    }} />
+                    <span style={{ 
+                        fontSize: '0.75rem', 
+                        color: aiStatus === 'online' ? '#10b981' : '#ef4444',
+                        fontWeight: 600
+                    }}>
+                        IA {aiStatus === 'online' ? 'Online' : 'Offline'}
+                    </span>
+                </div>
+
                 <div className="chat-input-area">
                     <input
                         type="file"
@@ -153,6 +180,7 @@ export default function ChatPage() {
                         📎
                     </button>
                     <input
+                        ref={inputRef}
                         className="chat-input"
                         placeholder="Pergunte algo ou envie um comprovante..."
                         value={input}

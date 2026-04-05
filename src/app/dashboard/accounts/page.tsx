@@ -107,15 +107,15 @@ export default function AccountsPage() {
     return (
         <div className="animate-fade">
             <div className="page-header">
-                <h1>🏦 Contas</h1>
+                <h1>Contas</h1>
                 <button className="btn btn-primary" onClick={() => setShowModal(true)}>
-                    ➕ Nova Conta
+                    Nova Conta
                 </button>
             </div>
 
             <div className="card" style={{ marginBottom: '1.5rem', background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
                 <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                    💰 <strong>Contas representam onde seu dinheiro está armazenado:</strong> banco, carteira ou cartão de crédito. gerencie todas as suas contas em um só lugar.
+                    <strong>Contas representam onde seu dinheiro está armazenado:</strong> banco, carteira ou cartão de crédito. gerencie todas as suas contas em um só lugar.
                 </p>
             </div>
 
@@ -225,7 +225,7 @@ export default function AccountsPage() {
                 <div className="modal-overlay" onClick={() => setShowModal(false)}>
                     <div className="modal" onClick={e => e.stopPropagation()}>
                         <div className="modal-header">
-                            <h2>🏦 Nova Conta</h2>
+                            <h2>Nova Conta</h2>
                             <button className="modal-close" onClick={() => setShowModal(false)}>×</button>
                         </div>
                         <form onSubmit={handleSubmit}>
@@ -358,7 +358,7 @@ export default function AccountsPage() {
                                 </>
                             )}
 
-                            <button className="btn btn-primary w-full" type="submit">💾 Salvar</button>
+                            <button className="btn btn-primary w-full" type="submit">Salvar</button>
                         </form>
                     </div>
                 </div>

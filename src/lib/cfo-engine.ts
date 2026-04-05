@@ -12,9 +12,10 @@ export interface CFOInsight {
     percentage?: number;
 }
 
-export async function generateInsights(familyId: string): Promise<CFOInsight[]> {
+export async function generateInsights(familyId: string, userId: string): Promise<CFOInsight[]> {
     const insights: CFOInsight[] = [];
     const now = new Date();
+    // ... (rest of the logic remains same until AI section)
     const currentMonthStart = startOfMonth(now);
     const currentMonthEnd = endOfMonth(now);
     const prevMonthStart = startOfMonth(subMonths(now, 1));
@@ -82,7 +83,18 @@ export async function generateInsights(familyId: string): Promise<CFOInsight[]> 
     const projectedExpenses = dailyBurn * daysInMonth;
     const projectedBalance = totalCurrentIncome - projectedExpenses;
 
-    if (projectedBalance < 0) {
+    // Only show projection if we have enough data (at least 3 transactions or 5+ days in month)
+    const hasEnoughData = currentTransactions.length >= 3 || currentDay >= 5;
+
+    if (!hasEnoughData) {
+        insights.push({
+            id: 'collecting-data',
+            type: 'info',
+            icon: '📊',
+            title: 'Coletando Dados',
+            message: 'Precisamos de mais transações para gerar uma previsão precisa. Continue registrando seus gastos!',
+        });
+    } else if (projectedBalance < 0) {
         insights.push({
             id: 'negative-projection',
             type: 'warning',
@@ -201,6 +213,62 @@ export async function generateInsights(familyId: string): Promise<CFOInsight[]> 
                 message: `Sua taxa de poupança é de apenas ${savingsRate.toFixed(0)}%. Tente reduzir despesas não essenciais.`,
                 percentage: savingsRate,
             });
+        }
+    }
+
+    // 7. AI Final Commentary (Optional based on API Key presence)
+    if (process.env.OPENAI_API_KEY && insights.length > 0) {
+        try {
+            const { logAiUsage, checkMonthlyLimit } = await import('./ai-usage');
+            const { allowed } = await checkMonthlyLimit(familyId);
+
+            if (allowed) {
+                const OpenAI = (await import('openai')).default;
+                const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+                const summary = insights.map(i => `${i.title}: ${i.message}`).join('. ');
+                const completion = await openai.chat.completions.create({
+                    model: 'gpt-3.5-turbo',
+                    messages: [
+                        {
+                            role: 'system',
+                            content: 'Você é um CFO experiente. Resuma os insights financeiros da família em um parágrafo curto, motivacional e estratégico em português.'
+                        },
+                        { role: 'user', content: `Aqui estão os principais pontos do mês: ${summary}` }
+                    ],
+                    max_tokens: 150,
+                });
+
+                // Log AI usage
+                await logAiUsage({
+                    familyId,
+                    userId,
+                    actionType: 'CFO_INSIGHTS',
+                    tokensInput: completion.usage?.prompt_tokens || 0,
+                    tokensOutput: completion.usage?.completion_tokens || 0
+                });
+
+                const commentary = completion.choices[0].message.content;
+                if (commentary) {
+                    insights.push({
+                        id: 'ai-cfo-advice',
+                        type: 'info',
+                        icon: '🧠',
+                        title: 'Reflexão do CFO IA',
+                        message: commentary,
+                    });
+                }
+            } else {
+                insights.push({
+                    id: 'ai-limit-reached',
+                    type: 'warning',
+                    icon: '⚠️',
+                    title: 'CFO IA Offline',
+                    message: 'O limite mensal de uso da inteligência artificial foi atingido para sua família.',
+                });
+            }
+        } catch (e) {
+            console.error('AI Insight Error:', e);
         }
     }
 

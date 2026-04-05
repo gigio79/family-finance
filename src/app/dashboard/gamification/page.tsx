@@ -38,7 +38,7 @@ export default function GamificationPage() {
     if (loading) {
         return (
             <div>
-                <div className="page-header"><h1>🏆 Gamificação</h1></div>
+                <div className="page-header"><h1>Gamificação</h1></div>
                 <div className="stats-grid">{[1, 2, 3].map(i => <div key={i} className="skeleton" style={{ height: 80 }} />)}</div>
             </div>
         );
@@ -50,12 +50,12 @@ export default function GamificationPage() {
     return (
         <div className="animate-fade">
             <div className="page-header">
-                <h1>🏆 Gamificação</h1>
+                <h1>Gamificação</h1>
             </div>
 
             <div className="card" style={{ marginBottom: '1.5rem', background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
                 <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                    🏆 <strong>Acompanhe sua evolução financeira</strong> através de metas, desafios e conquistas. Complete objetivos para melhorar o controle e disciplina da família.
+                    <strong>Acompanhe sua evolução financeira</strong> através de metas, desafios e conquistas. Complete objetivos para melhorar o controle e disciplina da família.
                 </p>
             </div>
 

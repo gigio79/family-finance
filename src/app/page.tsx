@@ -30,7 +30,7 @@ export default function HomePage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
-      router.push('/dashboard');
+      router.push('/greeting');
     } catch (err: any) {
       setError(err.message || 'Erro ao fazer login');
     } finally {
@@ -55,7 +55,7 @@ export default function HomePage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
-      router.push('/dashboard');
+      router.push('/greeting');
     } catch (err: any) {
       setError(err.message || 'Erro ao registrar');
     } finally {

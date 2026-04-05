@@ -43,7 +43,7 @@ export default function DashboardPage() {
     return (
       <div className="animate-fade">
         <div className="page-header">
-          <h1>📊 Dashboard</h1>
+          <h1>Dashboard</h1>
         </div>
         <ErrorState 
           title="Erro ao carregar"
@@ -58,7 +58,7 @@ export default function DashboardPage() {
     return (
       <div className="animate-fade">
         <div className="page-header">
-          <h1>📊 Dashboard</h1>
+          <h1>Dashboard</h1>
         </div>
         <EmptyState 
           icon="🔐"
@@ -80,7 +80,7 @@ function DashboardContent({ data, insights }: { data: DashboardData; insights: I
   return (
     <div className="animate-fade">
       <div className="page-header">
-        <h1>📊 Dashboard</h1>
+        <h1>Dashboard</h1>
         <span className="text-sm text-muted">
           {new Date().toLocaleDateString('pt-BR', { 
             weekday: 'long', 

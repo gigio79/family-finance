@@ -110,10 +110,10 @@ export default function FamilyPage() {
     return (
         <div className="animate-fade">
             <div className="page-header">
-                <h1>👨‍👩‍👧‍👦 Gerenciar Família</h1>
+                <h1>Gerenciar Família</h1>
                 {userRole === 'ADMIN' && (
                     <button className="btn btn-primary" onClick={() => setShowModal(true)}>
-                        ➕ Adicionar Membro
+                        Adicionar Membro
                     </button>
                 )}
             </div>
@@ -125,7 +125,7 @@ export default function FamilyPage() {
             )}
 
             <div className="card">
-                <h3 style={{ marginBottom: '1rem' }}>🏠 {family?.name}</h3>
+                <h3 style={{ marginBottom: '1rem' }}>{family?.name}</h3>
                 <p className="text-muted">{family?.users.length} membro(s) na família</p>
             </div>
 
@@ -204,7 +204,7 @@ export default function FamilyPage() {
                 <div className="modal-overlay" onClick={() => setShowModal(false)}>
                     <div className="modal" onClick={e => e.stopPropagation()}>
                         <div className="modal-header">
-                            <h2>➕ Adicionar Membro</h2>
+                            <h2>Adicionar Membro</h2>
                             <button className="modal-close" onClick={() => setShowModal(false)}>×</button>
                         </div>
                         <form onSubmit={handleSubmit}>
@@ -253,7 +253,7 @@ export default function FamilyPage() {
                                 </select>
                             </div>
                             <button className="btn btn-primary w-full" type="submit">
-                                ➕ Adicionar
+                                Adicionar
                             </button>
                         </form>
                     </div>

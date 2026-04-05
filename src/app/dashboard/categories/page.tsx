@@ -95,7 +95,7 @@ export default function CategoriesPage() {
   return (
     <div className="animate-fade">
       <div className="page-header">
-        <h1>🏷️ Categorias</h1>
+        <h1>Categorias</h1>
         <button
           className="btn btn-primary"
           onClick={() => {
@@ -104,13 +104,13 @@ export default function CategoriesPage() {
             setShowModal(true);
           }}
         >
-          ➕ Nova Categoria
+          Nova Categoria
         </button>
       </div>
 
       <div className="card" style={{ marginBottom: '1.5rem', background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
         <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-          🏷️ <strong>Categorias ajudam a organizar seus gastos e receitas</strong> para relatórios mais claros. Classifique cada transação para entender melhor para onde vai seu dinheiro.
+          <strong>Categorias ajudam a organizar seus gastos e receitas</strong> para relatórios mais claros. Classifique cada transação para entender melhor para onde vai seu dinheiro.
         </p>
       </div>
 
@@ -188,7 +188,7 @@ export default function CategoriesPage() {
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div className="modal" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>{editing ? '✏️ Editar Categoria' : '➕ Nova Categoria'}</h2>
+              <h2>{editing ? 'Editar Categoria' : 'Nova Categoria'}</h2>
               <button className="modal-close" onClick={() => setShowModal(false)}>
                 ×
               </button>
@@ -286,7 +286,7 @@ export default function CategoriesPage() {
               </div>
 
               <button className="btn btn-primary w-full" type="submit">
-                {editing ? '💾 Salvar' : '✅ Criar'}
+                {editing ? 'Salvar' : 'Criar'}
               </button>
             </form>
           </div>

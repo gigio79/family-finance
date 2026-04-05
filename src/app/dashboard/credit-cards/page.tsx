@@ -114,15 +114,15 @@ export default function CreditCardsPage() {
     return (
         <div className="animate-fade">
             <div className="page-header">
-                <h1>💳 Cartões de Crédito</h1>
+                <h1>Cartões de Crédito</h1>
                 <button className="btn btn-primary" onClick={() => setShowModal(true)}>
-                    ➕ Novo Cartão
+                    Novo Cartão
                 </button>
             </div>
 
             <div className="card" style={{ marginBottom: '1.5rem', background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
                 <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                    💳 <strong>Acompanhe suas faturas mensais</strong> e o limite disponível de cada cartão. Aqui você visualiza todas as compras lançadas na fatura.
+                    <strong>Acompanhe suas faturas mensais</strong> e o limite disponível de cada cartão. Aqui você visualiza todas as compras lançadas na fatura.
                 </p>
             </div>
 
@@ -198,7 +198,7 @@ export default function CreditCardsPage() {
                 <div className="modal-overlay" onClick={() => setShowModal(false)}>
                     <div className="modal" onClick={e => e.stopPropagation()}>
                         <div className="modal-header">
-                            <h2>💳 Novo Cartão</h2>
+                            <h2>Novo Cartão</h2>
                             <button className="modal-close" onClick={() => setShowModal(false)}>×</button>
                         </div>
                         <form onSubmit={handleSubmit}>
@@ -232,7 +232,7 @@ export default function CreditCardsPage() {
                                     ))}
                                 </div>
                             </div>
-                            <button className="btn btn-primary w-full" type="submit">💾 Salvar</button>
+                            <button className="btn btn-primary w-full" type="submit">Salvar</button>
                         </form>
                     </div>
                 </div>

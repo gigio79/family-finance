@@ -7,7 +7,7 @@ datasource db {
 }
 
 model Family {
-  id        String   @id @default(uuid())
+  id        String   @id @default(cuid())
   name      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -21,11 +21,12 @@ model Family {
 }
 
 model User {
-  id            String   @id @default(uuid())
+  id            String   @id @default(cuid())
   name          String
   email         String   @unique
   password      String
   role          String   @default("MEMBER") // ADMIN or MEMBER
+  avatar        String?  // URL da foto de perfil
   points        Int      @default(0)
   streak        Int      @default(0)
   lastLoginDate String?
@@ -45,7 +46,7 @@ model User {
 }
 
 model Category {
-  id        String   @id @default(uuid())
+  id        String   @id @default(cuid())
   name      String
   type      String // INCOME or EXPENSE
   icon      String   @default("📦")
@@ -64,7 +65,7 @@ model Category {
 }
 
 model Account {
-  id          String    @id @default(uuid())
+  id          String    @id @default(cuid())
   name        String
   type        String    // CASH, BANK, CREDIT_CARD
   balance     Float     @default(0)
@@ -85,7 +86,7 @@ model Account {
 }
 
 model Transaction {
-  id                  String   @id @default(uuid())
+  id                  String   @id @default(cuid())
   amount              Float
   description         String
   date                DateTime
@@ -104,6 +105,9 @@ model Transaction {
 
   // Credit card billing
   billingMonth       DateTime?
+
+  // Metadata para notificações e tracking
+  metadata          Json?    // Armazena dados da notificação, confiança, etc
 
   categoryId  String?
   accountId   String?
@@ -130,7 +134,7 @@ model Transaction {
 }
 
 model Budget {
-  id         String @id @default(uuid())
+  id         String @id @default(cuid())
   month      String // "2026-02" format
   limit      Float
   categoryId String
@@ -144,7 +148,7 @@ model Budget {
 }
 
 model Achievement {
-  id       String   @id @default(uuid())
+  id       String   @id @default(cuid())
   type     String // ECONOMIST, CONSISTENT, MASTER, RECORDER, SAVER
   name     String
   icon     String
@@ -159,7 +163,7 @@ model Achievement {
 }
 
 model ChatMessage {
-  id        String   @id @default(uuid())
+  id        String   @id @default(cuid())
   content   String
   response  String
   userId    String
@@ -173,7 +177,7 @@ model ChatMessage {
 }
 
 model Notification {
-  id        String   @id @default(uuid())
+  id        String   @id @default(cuid())
   title     String
   body      String
   read      Boolean  @default(false)
@@ -189,7 +193,7 @@ model Notification {
 }
 
 model AiUsageLog {
-  id            String   @id @default(uuid())
+  id            String   @id @default(cuid())
   familyId      String
   userId        String
   actionType    String

@@ -89,10 +89,33 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
                 <div style={{ padding: '1rem 0.75rem', borderTop: '1px solid var(--border)', background: 'var(--bg-secondary)' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.5rem 1rem', marginBottom: '0.5rem' }}>
-                        <div className="avatar">{user.name?.[0]?.toUpperCase()}</div>
+                        <div 
+                            className="avatar"
+                            style={{
+                                width: 36,
+                                height: 36,
+                                borderRadius: '50%',
+                                overflow: 'hidden',
+                                background: user.avatar ? 'transparent' : 'var(--primary)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                flexShrink: 0
+                            }}
+                        >
+                            {user.avatar ? (
+                                <img 
+                                    src={user.avatar} 
+                                    alt="Avatar" 
+                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                />
+                            ) : (
+                                user.name?.[0]?.toUpperCase()
+                            )}
+                        </div>
                         <div>
                             <div style={{ fontWeight: 600, fontSize: '0.85rem' }}>{user.name}</div>
-                            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{user.role === 'ADMIN' ? '👑 Admin' : '👤 Membro'}</div>
+                            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{user.role === 'ADMIN' ? 'Admin' : 'Membro'}</div>
                         </div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 1rem' }}>
@@ -110,8 +133,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
             <main className="main-content">
                 {children}
-                <InstallAppButton />
             </main>
+            <InstallAppButton />
         </div>
     );
 }

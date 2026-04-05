@@ -1,4 +1,4 @@
--- CreateTable
+-- Schema
 CREATE TABLE "Family" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "name" TEXT NOT NULL,
@@ -6,13 +6,13 @@ CREATE TABLE "Family" (
     "updatedAt" DATETIME NOT NULL
 );
 
--- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "role" TEXT NOT NULL DEFAULT 'MEMBER',
+    "avatar" TEXT,
     "points" INTEGER NOT NULL DEFAULT 0,
     "streak" INTEGER NOT NULL DEFAULT 0,
     "lastLoginDate" TEXT,
@@ -23,18 +23,34 @@ CREATE TABLE "User" (
     CONSTRAINT "User_familyId_fkey" FOREIGN KEY ("familyId") REFERENCES "Family" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
--- CreateTable
 CREATE TABLE "Category" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "name" TEXT NOT NULL,
+    "type" TEXT NOT NULL,
     "icon" TEXT NOT NULL DEFAULT '📦',
     "color" TEXT NOT NULL DEFAULT '#6366f1',
     "rules" TEXT NOT NULL DEFAULT '[]',
     "familyId" TEXT NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "Category_familyId_fkey" FOREIGN KEY ("familyId") REFERENCES "Family" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
--- CreateTable
+CREATE TABLE "Account" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "name" TEXT NOT NULL,
+    "type" TEXT NOT NULL,
+    "balance" REAL NOT NULL DEFAULT 0,
+    "limit" REAL,
+    "closingDay" INTEGER,
+    "dueDay" INTEGER,
+    "color" TEXT NOT NULL DEFAULT '#6366f1',
+    "icon" TEXT NOT NULL DEFAULT '💳',
+    "familyId" TEXT NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
+    CONSTRAINT "Account_familyId_fkey" FOREIGN KEY ("familyId") REFERENCES "Family" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
 CREATE TABLE "Transaction" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "amount" REAL NOT NULL,
@@ -45,17 +61,26 @@ CREATE TABLE "Transaction" (
     "source" TEXT NOT NULL DEFAULT 'MANUAL',
     "recurring" BOOLEAN NOT NULL DEFAULT false,
     "recurringInterval" TEXT,
+    "isInstallment" BOOLEAN NOT NULL DEFAULT false,
+    "installmentGroupId" TEXT,
+    "installmentNumber" INTEGER,
+    "totalInstallments" INTEGER,
+    "parentTransactionId" TEXT,
+    "billingMonth" DATETIME,
+    "metadata" JSONB,
     "categoryId" TEXT,
+    "accountId" TEXT,
     "userId" TEXT NOT NULL,
     "familyId" TEXT NOT NULL,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
     CONSTRAINT "Transaction_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "Category" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT "Transaction_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "Account" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
     CONSTRAINT "Transaction_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT "Transaction_familyId_fkey" FOREIGN KEY ("familyId") REFERENCES "Family" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+    CONSTRAINT "Transaction_familyId_fkey" FOREIGN KEY ("familyId") REFERENCES "Family" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT "Transaction_parentTransactionId_fkey" FOREIGN KEY ("parentTransactionId") REFERENCES "Transaction" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
--- CreateTable
 CREATE TABLE "Budget" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "month" TEXT NOT NULL,
@@ -66,7 +91,6 @@ CREATE TABLE "Budget" (
     CONSTRAINT "Budget_familyId_fkey" FOREIGN KEY ("familyId") REFERENCES "Family" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
--- CreateTable
 CREATE TABLE "Achievement" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "type" TEXT NOT NULL,
@@ -74,10 +98,10 @@ CREATE TABLE "Achievement" (
     "icon" TEXT NOT NULL,
     "earnedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "userId" TEXT NOT NULL,
+    "familyId" TEXT NOT NULL,
     CONSTRAINT "Achievement_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
--- CreateTable
 CREATE TABLE "ChatMessage" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "content" TEXT NOT NULL,
@@ -88,7 +112,6 @@ CREATE TABLE "ChatMessage" (
     CONSTRAINT "ChatMessage_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
--- CreateTable
 CREATE TABLE "Notification" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "title" TEXT NOT NULL,
@@ -96,15 +119,21 @@ CREATE TABLE "Notification" (
     "read" BOOLEAN NOT NULL DEFAULT false,
     "data" TEXT NOT NULL DEFAULT '{}',
     "userId" TEXT NOT NULL,
+    "familyId" TEXT NOT NULL,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "Notification_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
--- CreateIndex
-CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+CREATE TABLE "AiUsageLog" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "familyId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "actionType" TEXT NOT NULL,
+    "tokensInput" INTEGER NOT NULL,
+    "tokensOutput" INTEGER NOT NULL,
+    "estimatedCost" REAL NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "AiUsageLog_familyId_fkey" FOREIGN KEY ("familyId") REFERENCES "Family" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT "AiUsageLog_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);
 
--- CreateIndex
-CREATE UNIQUE INDEX "Category_name_familyId_key" ON "Category"("name", "familyId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Budget_month_categoryId_familyId_key" ON "Budget"("month", "categoryId", "familyId");

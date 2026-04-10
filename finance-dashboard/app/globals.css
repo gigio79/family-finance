@@ -1,0 +1,79 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-geist-mono);
+  
+  --color-primary: #0075D9;
+  --color-primary-foreground: #FFFFFF;
+  
+  --color-secondary: #00E1FF;
+  --color-secondary-foreground: #0A1128;
+
+  --color-card: #FFFFFF;
+  --color-card-foreground: #0A1128;
+
+  --color-muted: #F2F5F7;
+  --color-muted-foreground: #4B5563;
+
+  --color-border: #E5E7EB;
+  --color-input: #E5E7EB;
+  --color-ring: #0075D9;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 24px;   /* Neon standard for cards */
+  --radius-xl: 32px;
+  --radius-full: 9999px;
+}
+
+:root {
+  --background: #F8FAFC;
+  --foreground: #0A1128;
+  --card: #FFFFFF;
+  --card-foreground: #0A1128;
+  --popover: #FFFFFF;
+  --popover-foreground: #0A1128;
+  --primary: #0075D9;
+  --primary-foreground: #FFFFFF;
+  --secondary: #F1F5F9;
+  --secondary-foreground: #0A1128;
+  --muted: #F1F5F9;
+  --muted-foreground: #64748B;
+  --accent: #F1F5F9;
+  --accent-foreground: #0A1128;
+  --destructive: #EF4444;
+  --border: #E2E8F0;
+  --input: #E2E8F0;
+  --ring: #0075D9;
+  --radius: 1.5rem;
+}
+
+/* Forcing a cleaner look */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold tracking-tight text-slate-900;
+  }
+}
+
+/* Custom utility classes */
+@layer components {
+  .pill-button {
+    @apply rounded-full px-6 py-2 font-medium transition-all hover:opacity-90 active:scale-95;
+  }
+  .neon-card {
+    @apply bg-card rounded-[24px] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6;
+  }
+}
